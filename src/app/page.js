@@ -1,95 +1,330 @@
+"use client";
 import Image from "next/image";
-import styles from "./page.module.css";
+import "./page.module.css";
+import {useEffect, useMemo, useRef, useState} from "react";
+import {createClient} from "@supabase/supabase-js";
+import Link from "next/link";
+import React from "react"
+import mapboxgl from "mapbox-gl";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps"
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export default function Home() {
+
+  const [warnings, setWarnings] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [contacts, setContacts] = useState([]);
+  const [cord, updateCord] = useState([])
+
+  const mapContainerRef = useRef();
+  // this.mapContainerRef = React.createRef();
+  const mapRef = useRef();
+
+
+  function mcoord(x) {
+
+
+    const marker = new mapboxgl.Marker()
+        .setLngLat([2,2])
+        .addTo(mapRef.current);
+
+
+    if (mapRef.current) return;
+    if (!mapContainerRef.current) return;
+
+    const size = 200;
+    const pulsingDot = {
+      width: size,
+      height: size,
+      data: new Uint8Array(size * size * 4),
+
+      onAdd: function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        this.context = canvas.getContext('2d');
+      },
+
+      render: function () {
+        const duration = 1000;
+        const t = (performance.now() % duration) / duration;
+
+        const radius = (size / 2) * 0.3;
+        const outerRadius = (size / 2) * 0.7 * t + radius;
+        const context = this.context;
+
+        context.clearRect(0, 0, this.width, this.height);
+        context.beginPath();
+        context.arc(
+            this.width / 2,
+            this.height / 2,
+            outerRadius,
+            0,
+            Math.PI * 2
+        );
+        context.fillStyle = `rgba(255, 200, 200, ${1 - t})`;
+        context.fill();
+
+        context.beginPath();
+        context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+        context.fillStyle = 'rgba(255, 100, 100, 1)';
+        context.strokeStyle = 'white';
+        context.lineWidth = 2 + 4 * (1 - t);
+        context.fill();
+        context.stroke();
+
+        this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+        mapRef.current.triggerRepaint();
+
+        return true;
+      }
+    };
+
+
+    mapRef.current.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
+
+    mapRef.current.addSource('dot-point', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: x
+            }
+          }
+        ]
+      }
+    });
+
+    mapRef.current.addLayer({
+      id: 'layer-with-pulsing-dot',
+      type: 'symbol',
+      source: 'dot-point',
+      layout: {
+        'icon-image': 'pulsing-dot'
+      }
+    });
+
+  }
+
+  useEffect(() => {
+    //mapboxgl.accessToken = 'pk.eyJ1IjoibWFuYW4xMDEwMTAiLCJhIjoiY20wbTR6bXNzMGQ0NDJpcXo4bDRhYWo3NSJ9.24fXRkHUe0_GIAPoaXXIUQ';
+    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+    if (mapRef.current) return;
+    if (!mapContainerRef.current) return;
+
+    mapRef.current = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      center: [0, 0],
+      zoom: 5,
+      style: 'mapbox://styles/mapbox/streets-v12'
+    })
+    const size = 200;
+
+    const pulsingDot = {
+      width: size,
+      height: size,
+      data: new Uint8Array(size * size * 4),
+
+      onAdd: function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.width;
+        canvas.height = this.height;
+        this.context = canvas.getContext('2d');
+      },
+
+      render: function () {
+        const duration = 1000;
+        const t = (performance.now() % duration) / duration;
+
+        const radius = (size / 2) * 0.3;
+        const outerRadius = (size / 2) * 0.7 * t + radius;
+        const context = this.context;
+
+        context.clearRect(0, 0, this.width, this.height);
+        context.beginPath();
+        context.arc(
+            this.width / 2,
+            this.height / 2,
+            outerRadius,
+            0,
+            Math.PI * 2
+        );
+        context.fillStyle = `rgba(255, 200, 200, ${1 - t})`;
+        context.fill();
+
+        context.beginPath();
+        context.arc(this.width / 2, this.height / 2, radius, 0, Math.PI * 2);
+        context.fillStyle = 'rgba(255, 100, 100, 1)';
+        context.strokeStyle = 'white';
+        context.lineWidth = 2 + 4 * (1 - t);
+        context.fill();
+        context.stroke();
+
+        this.data = context.getImageData(0, 0, this.width, this.height).data;
+
+        mapRef.current.triggerRepaint();
+
+        return true;
+      }
+    };
+
+
+    mapRef.current.on('load', () => {
+      mapRef.current.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
+
+      mapRef.current.addSource('dot-point', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [0, 0]
+              }
+            }
+          ]
+        }
+      });
+
+      mapRef.current.addLayer({
+        id: 'layer-with-pulsing-dot',
+        type: 'symbol',
+        source: 'dot-point',
+        layout: {
+          'icon-image': 'pulsing-dot'
+        }
+      });
+    });
+    // MAP ENDS
+
+    async function fetchContacts() {
+      const {data, error} = await supabase
+          .from('contacts')
+          .select();
+
+      if (error) {
+        console.error(error);
+      } else {
+        setContacts(data);
+      }
+    }
+    async function fetchData() {
+      const {data, error} = await supabase
+          .from('warnings')
+          .select();
+
+      if (error) {
+        console.log(error);
+      } else {
+        setWarnings(data);
+      }
+    setLoading(false);
+    }
+    fetchData();
+    fetchContacts();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+      <>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css' rel='stylesheet'/>
+        <title>Sachet - Global Disaster Alerts</title>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        <header className={"header"}>
+          <div className="header-container">
+            <div className="logo">
+              <img src="logo.png" alt="Alert-Sphere"/>
+            </div>
+            <nav className={"nav"}>
+              <ul className="nav-links">
+                <li>
+                  <a href="#hero">Home</a>
+                </li>
+                <li>
+                  <a href="#services">Services</a>
+                </li>
+                <li>
+                  <a href="#map-section">Map</a>
+                </li>
+                <li>
+                  <a href="#alerts">Alerts</a>
+                </li>
+                <li>
+                  <a href="#contact">Contact</a>
+                </li>
+              </ul>
+            </nav>
+            <div className="search-container">
+              <input type="text" placeholder="Search..." id="search-input"/>
+              <button id="search-button">Search</button>
+            </div>
+          </div>
+        </header>
+        <main>
+          <section id="hero">
+            <h1>Welcome to Alert-Sphere - Global Disaster Alerts</h1>
+            <p>Your one-stop platform for global disaster alerts and information.</p>
+          </section>
+          <section id="services">
+            <h2>Our Services</h2>
+            <div className="service-cards">
+              <div className="card">
+                <h3>Real-Time Alerts</h3>
+                <p>Stay informed with real-time disaster alerts and notifications.</p>
+              </div>
+              <div className="card">
+                <h3>Disaster Preparedness</h3>
+                <p>Access resources and guidelines for disaster preparedness.</p>
+              </div>
+              <div className="card">
+                <h3>Emergency Contacts</h3>
+                <p>Find emergency contact information for various disasters.</p>
+              </div>
+            </div>
+          </section>
+          {/* Map Section */}
+          <section id="map-section">
+            <h2>Global Disaster Map</h2>
+            {/*<Map id="map"/>*/}
+            <div id="map" className="map-container" ref={mapContainerRef}></div>
+          </section>
+          <section id="alerts">
+            <h2>Latest Alerts</h2>
+            <ul id="alert-list">{
+              /* Alerts will be dynamically loaded here */
+              warnings.map((alert) => (
+                  <li key={alert.id} onClick={mcoord([alert.lat, alert.lng])}>{alert.title}</li>
+              ))
+            }</ul>
+          </section>
+          <section id="contact">
+            <h2>Contacts : </h2>
+            <ul id="contact-list">{
+              contacts.map((contact) => (
+                  <li key={contact.id}><Link href={"tel:" + contact.phone}>{contact.name} - {contact.phone}</Link></li>
+              ))}
+            </ul>
+          </section>
+        </main>
+        <footer className={"footer"}>
+          <p>© 2024 Sachet - Global Disaster Alerts. All rights reserved.</p>
+        </footer>
+        <div id="particles-js"/>
+      </>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
   );
 }
