@@ -7,8 +7,8 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #fff;
+  color: #000;
   scroll-behavior: smooth;
 }
 
@@ -54,7 +54,6 @@ body {
 /* Header styles */
 .header {
   width: 100%;
-  color: white;
   padding: 20px 0;
   animation: SlideInDown 1s ;
   z-index: 9999;
@@ -92,13 +91,15 @@ body {
 }
 
 .nav-links a {
-  color: white;
   text-decoration: none;
   font-size: 16px;
 }
 
 .nav-links a:hover {
-  text-decoration: underline;
+  /*text-decoration: underline;*/
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 8px;
 }
 
 /* Search container */
@@ -126,7 +127,7 @@ body {
 
 /* Hero section */
 #hero {
-  background-color: #000000;
+  background-color: #fff;
   padding: 80px 20px;
   text-align: center;
   animation: fadeIn 1s ;
@@ -165,7 +166,7 @@ body {
 .card {
   padding: 20px;
   margin: 10px;
-  border: 1px solid white;
+  border: 1px solid black;
   border-radius: 8px;
   width: 300px;
   text-align: left;
@@ -223,7 +224,7 @@ body {
   margin-bottom: 10px;
   border-radius: 4px;
   transition: transform 0.3s ease-in-out;
-  border: 1px solid white;
+  border: 1px solid black;
 }
 
 .alert-list li:hover {
@@ -232,7 +233,6 @@ body {
 
 /* Footer styles */
 .footer {
-  color: white;
   text-align: center;
   padding: 20px 0;
   margin-top: 40px;

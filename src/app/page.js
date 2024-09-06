@@ -266,22 +266,25 @@ export default function Home() {
           <div className="logo text-2xl flex-1">
             <span>Alert</span><span>Sphere</span>
           </div>
-          <nav className={"nav flex-1"}>
+          <nav className={"nav flex-2"}>
             <ul className="nav-links">
-              <li>
-                <a href="#hero">Home</a>
-              </li>
-              <li>
-                <a href="#services">Services</a>
-              </li>
+              {/*<li>*/}
+              {/*  <a href="#hero">Home</a>*/}
+              {/*</li>*/}
+              {/*<li>*/}
+              {/*  <a href="#services">Services</a>*/}
+              {/*</li>*/}
               <li>
                 <a href="#map-section">Map</a>
               </li>
               <li>
-                <a href="#alerts">Alerts</a>
+                <a href="#alerts">Realtime Alerts</a>
               </li>
               <li>
-                <a href="#contact">Contact</a>
+                <a href="#alerts">Predicted Alerts</a>
+              </li>
+              <li>
+                <a href="#contact">Emergency Contacts</a>
               </li>
             </ul>
           </nav>
@@ -295,7 +298,7 @@ export default function Home() {
             Your one-stop platform for global disaster alerts and information.
           </p>
         </section>
-        <section id="services">
+        {/*<section id="services">
           <h2>Our Services</h2>
           <div className="service-cards">
             <div className="card">
@@ -315,11 +318,11 @@ export default function Home() {
               <p>Find emergency contact information for various disasters.</p>
             </div>
           </div>
-        </section>
+        </section>*/}
         {/* Map Section */}
         <div className="w-[90vw] mx-auto">
           <section className="alerts flex-1">
-          <select className="text-white bg-black" value={selectedPlace} onChange={handlePlaceChange}>
+          <select className="text-black bg-white" value={selectedPlace} onChange={handlePlaceChange}>
               <option value="">Select a region</option>
               {places.map((ePlace, index) => {
                 return (
@@ -348,7 +351,7 @@ export default function Home() {
                 ))}
             </ul>
             <h2>Predicted Alerts</h2>
-            
+
             <ul className="alert-list">
               {warnings
               .filter((alert) => {
