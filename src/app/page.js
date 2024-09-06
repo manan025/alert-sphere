@@ -315,7 +315,7 @@ export default function Home() {
               <option value="">Select a place</option>
               {places.map((ePlace, index) => {
                 return (
-                  <option key={index} value={ePlace}>
+                  <option key={index} value={ePlace} className="font-">
                     {ePlace}
                   </option>
                 );
@@ -343,6 +343,12 @@ export default function Home() {
             
             <ul className="alert-list">
               {warnings
+              .filter((alert) => {
+                // If no place is selected, return all warnings
+                if (!selectedPlace) return true;
+                // Otherwise, filter by the selected place
+                return alert.place === selectedPlace;
+              })
                 .map((alert) => (
                   <li
                     key={alert.id}
