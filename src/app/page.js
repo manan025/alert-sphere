@@ -7,7 +7,13 @@ import Link from "next/link";
 import React from "react";
 import mapboxgl from "mapbox-gl";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import { Poppins } from "next/font/google";
 
+
+const poppins = Poppins({
+  weight:["400","500","600","700","800"],
+  subsets: ["latin"]
+})
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -309,13 +315,13 @@ export default function Home() {
           </div>
         </section>
         {/* Map Section */}
-        <div className="flex w-[90vw] mx-auto">
+        <div className="w-[90vw] mx-auto">
           <section className="alerts flex-1">
           <select className="text-white bg-black" value={selectedPlace} onChange={handlePlaceChange}>
-              <option value="">Select a place</option>
+              <option value="">Select a region</option>
               {places.map((ePlace, index) => {
                 return (
-                  <option key={index} value={ePlace} className="font-">
+                  <option key={index} value={ePlace} className={poppins.className}>
                     {ePlace}
                   </option>
                 );
@@ -379,7 +385,7 @@ export default function Home() {
         </section>
       </main>
       <footer className={"footer"}>
-        <p>© 2024 Sachet - Global Disaster Alerts. All rights reserved.</p>
+        <p>© 2024 AlertSphere. All rights reserved.</p>
       </footer>
       <div id="particles-js" />
     </>
