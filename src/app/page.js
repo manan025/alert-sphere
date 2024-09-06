@@ -8,6 +8,7 @@ import React from "react";
 import mapboxgl from "mapbox-gl";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -256,10 +257,10 @@ export default function Home() {
 
       <header className={"header"}>
         <div className="header-container">
-          <div className="logo">
-            <img src="logo.png" alt="Alert-Sphere" />
+          <div className="logo text-2xl flex-1">
+            <span>Alert</span><span>Sphere</span>
           </div>
-          <nav className={"nav"}>
+          <nav className={"nav flex-1"}>
             <ul className="nav-links">
               <li>
                 <a href="#hero">Home</a>
@@ -278,15 +279,12 @@ export default function Home() {
               </li>
             </ul>
           </nav>
-          <div className="search-container">
-            <input type="text" placeholder="Search..." id="search-input" />
-            <button id="search-button">Search</button>
-          </div>
+          <div className="flex-1"></div>
         </div>
       </header>
       <main>
         <section id="hero">
-          <h1>Welcome to Alert-Sphere - Global Disaster Alerts</h1>
+          <h1>Welcome to AlertSphere - Global Disaster Alerts</h1>
           <p>
             Your one-stop platform for global disaster alerts and information.
           </p>
@@ -311,41 +309,56 @@ export default function Home() {
           </div>
         </section>
         {/* Map Section */}
-        <section id="map-section">
-          <h2>Global Disaster Map</h2>
-          {/*<Map id="map"/>*/}
-          <div id="map" className="map-container" ref={mapContainerRef}></div>
-        </section>
-        <section id="alerts">
-          <h2>Latest Alerts</h2>
-          <select value={selectedPlace} onChange={handlePlaceChange}>
-            <option value="">Select a place</option>
-            {places.map((ePlace, index) => {
-              return (
-                <option key={index} value={ePlace}>
-                  {ePlace}
-                </option>
-              );
-            })}
-          </select>
-          <ul id="alert-list">
-            {warnings
-              .filter((alert) => {
-                // If no place is selected, return all warnings
-                if (!selectedPlace) return true;
-                // Otherwise, filter by the selected place
-                return alert.place === selectedPlace;
-              })
-              .map((alert) => (
-                <li
-                  key={alert.id}
-                  onClick={() => mcoord([alert.lat, alert.lng])}
-                >
-                  {alert.title}
-                </li>
-              ))}
-          </ul>
-        </section>
+        <div className="flex w-[90vw] mx-auto">
+          <section className="alerts flex-1">
+          <select className="text-white bg-black" value={selectedPlace} onChange={handlePlaceChange}>
+              <option value="">Select a place</option>
+              {places.map((ePlace, index) => {
+                return (
+                  <option key={index} value={ePlace}>
+                    {ePlace}
+                  </option>
+                );
+              })}
+            </select>
+            <h2>Current Alerts</h2>
+            <ul className="alert-list">
+              {warnings
+                .filter((alert) => {
+                  // If no place is selected, return all warnings
+                  if (!selectedPlace) return true;
+                  // Otherwise, filter by the selected place
+                  return alert.place === selectedPlace;
+                })
+                .map((alert) => (
+                  <li
+                    key={alert.id}
+                    onClick={() => mcoord([alert.lat, alert.lng])}
+                  >
+                    {alert.title}
+                  </li>
+                ))}
+            </ul>
+            <h2>Predicted Alerts</h2>
+            
+            <ul className="alert-list">
+              {warnings
+                .map((alert) => (
+                  <li
+                    key={alert.id}
+                    onClick={() => mcoord([alert.lat, alert.lng])}
+                  >
+                    {alert.title}
+                  </li>
+                ))}
+            </ul>
+          </section>
+          <section id="map-section" className="flex-1">
+            <h2>Global Disaster Map</h2>
+            {/*<Map id="map"/>*/}
+            <div id="map" className="map-container" ref={mapContainerRef}></div>
+          </section>
+        </div>
         <section id="contact">
           <h2>Contacts : </h2>
           <ul id="contact-list">
