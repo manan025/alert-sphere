@@ -305,8 +305,10 @@ export default function Home() {
               </p>
             </div>
             <div className="card">
+              <Link href={"/checklist"} className={"lno"}>
               <h3>Disaster Preparedness</h3>
               <p>Access resources and guidelines for disaster preparedness.</p>
+              </Link>
             </div>
             <div className="card">
               <h3>Emergency Contacts</h3>
