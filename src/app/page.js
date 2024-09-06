@@ -8,6 +8,10 @@ import React from "react";
 import mapboxgl from "mapbox-gl";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { Poppins } from "next/font/google";
+import io from 'socket.io-client';
+
+let socket;
+
 
 
 const poppins = Poppins({
@@ -22,6 +26,7 @@ const supabase = createClient(
 
 export default function Home() {
   const [warnings, setWarnings] = useState([]);
+  const [realTimeUpdates, setRealTimeUpdates] = useState([]);
   const [loading, setLoading] = useState(false);
   const [contacts, setContacts] = useState([]);
   const [cord, updateCord] = useState([]);
@@ -240,11 +245,20 @@ export default function Home() {
     }
     fetchData();
     fetchContacts();
+
+
+    socket = io('http://localhost:3001'); // Make sure your FastAPI server is running on this port
+
+    // Listen for incoming messages
+    socket.on('updaterealtime', (data) => {
+      console.log('Received from server:', data);
+      const newData = fetch("http://localhost:3001/disaster-data")
+      console.log(newData);
+      setRealTimeUpdates(data);
+    });
+
   }, []);
 
-  useEffect(() => {
-    console.log(places);
-  }, [places]);
 
   if (loading) {
     return <div>Loading...</div>;
