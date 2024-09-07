@@ -408,7 +408,7 @@ export default function Home() {
             {contacts.map((contact) => (
               <li key={contact.id}>
                 <Link href={"tel:" + contact.phone}>
-                  {contact.name} - {contact.phone}
+                  {contact.name} - {contact.phone} - {contact.region}
                 </Link>
               </li>
             ))}
