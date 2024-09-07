@@ -10,7 +10,7 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { Poppins } from "next/font/google";
 import io from 'socket.io-client';
 
-let socket;
+const socket = io('http://localhost:3002');
 
 
 
@@ -247,7 +247,7 @@ export default function Home() {
     fetchContacts();
 
 
-    socket = io('http://localhost:3001'); // Make sure your FastAPI server is running on this port
+
 
     // Listen for incoming messages
     socket.on('updaterealtime', (data) => {
