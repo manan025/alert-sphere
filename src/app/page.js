@@ -223,7 +223,7 @@ export default function Home() {
     }
 
     async function fetchData() {
-      const { data, error } = await supabase.from("warnings").select();
+      const { data, error } = await supabase.from("sample").select();
 
       if (error) {
         console.log(error);
@@ -381,11 +381,11 @@ export default function Home() {
                   // Otherwise, filter by the selected place
                   return alert.place === selectedPlace;
                 })
-                .map((alert) => (
+                .map((alert, key) => (
                   <li
-                    key={alert.id}
+                    key={key}
                   >
-                    {alert.title}
+                    {alert.country} : {alert.disaster} in {alert.month}st month
                   </li>
                 ))}
             </ul>
