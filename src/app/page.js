@@ -8,16 +8,11 @@ import React from "react";
 import mapboxgl from "mapbox-gl";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { Poppins } from "next/font/google";
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:3002');
-
-
 
 const poppins = Poppins({
-  weight:["400","500","600","700","800"],
-  subsets: ["latin"]
-})
+  weight: ["400", "500", "600", "700", "800"],
+  subsets: ["latin"],
+});
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -245,20 +240,34 @@ export default function Home() {
     }
     fetchData();
     fetchContacts();
-
-
-
-
-    // Listen for incoming messages
-    socket.on('updaterealtime', (data) => {
-      console.log('Received from server:', data);
-      const newData = fetch("http://localhost:3001/disaster-data")
-      console.log(newData);
-      setRealTimeUpdates(data);
-    });
-
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/disaster-data");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        
+
+        setRealTimeUpdates(data["gdacs_rss_feed"].slice(0,10));
+      } catch (error) {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+      }
+    };
+    fetchData();
+
+    // Set up the interval
+    const intervalId = setInterval(fetchData, 300000); // 300000 ms = 5 minutes
+
+    // Cleanup function to clear the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -278,7 +287,8 @@ export default function Home() {
       <header className={"header"}>
         <div className="header-container">
           <div className="logo text-2xl flex-1">
-            <span>Alert</span><span>Sphere</span>
+            <span>Alert</span>
+            <span>Sphere</span>
           </div>
           <nav className={"nav flex-2"}>
             <ul className="nav-links">
@@ -336,17 +346,38 @@ export default function Home() {
         {/* Map Section */}
         <div className="w-[90vw] mx-auto">
           <section className="alerts flex-1">
-          <select className="text-black bg-white" value={selectedPlace} onChange={handlePlaceChange}>
+            <select
+              className="text-black bg-white"
+              value={selectedPlace}
+              onChange={handlePlaceChange}
+            >
               <option value="">Select a region</option>
               {places.map((ePlace, index) => {
                 return (
-                  <option key={index} value={ePlace} className={poppins.className}>
+                  <option
+                    key={index}
+                    value={ePlace}
+                    className={poppins.className}
+                  >
                     {ePlace}
                   </option>
                 );
               })}
             </select>
             <h2>Current Alerts</h2>
+            <ul className="alert-list">
+              {
+                <ul>
+                    {realTimeUpdates.map((item, index) => (
+                        <li key={index}>
+                            {item.title}
+                        </li>
+                    ))}
+                </ul>
+            }
+            </ul>
+            <h2>Predicted Alerts</h2>
+
             <ul className="alert-list">
               {warnings
                 .filter((alert) => {
@@ -355,25 +386,6 @@ export default function Home() {
                   // Otherwise, filter by the selected place
                   return alert.place === selectedPlace;
                 })
-                .map((alert) => (
-                  <li
-                    key={alert.id}
-                    onClick={() => mcoord([alert.lat, alert.lng])}
-                  >
-                    {alert.title}
-                  </li>
-                ))}
-            </ul>
-            <h2>Predicted Alerts</h2>
-
-            <ul className="alert-list">
-              {warnings
-              .filter((alert) => {
-                // If no place is selected, return all warnings
-                if (!selectedPlace) return true;
-                // Otherwise, filter by the selected place
-                return alert.place === selectedPlace;
-              })
                 .map((alert) => (
                   <li
                     key={alert.id}
