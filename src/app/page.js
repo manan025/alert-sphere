@@ -34,10 +34,9 @@ export default function Home() {
 
   function mcoord(x) {
     const marker = new mapboxgl.Marker()
-      .setLngLat([2, 2])
+      .setLngLat(x)
       .addTo(mapRef.current);
 
-    if (mapRef.current) return;
     if (!mapContainerRef.current) return;
 
     const size = 200;
@@ -304,10 +303,10 @@ export default function Home() {
                 <a href="#map-section">Map</a>
               </li>
               <li>
-                <a href="#alerts">Realtime Alerts</a>
+                <a href="#curr">Realtime Alerts</a>
               </li>
               <li>
-                <a href="#alerts">Predicted Alerts</a>
+                <a href="#pred">Predicted Alerts</a>
               </li>
               <li>
                 <a href="#contact">Emergency Contacts</a>
@@ -337,7 +336,7 @@ export default function Home() {
             <div id="map" className="map-container" ref={mapContainerRef}></div>
           </section>
           <div className="flex-1 grow-[1]">
-            <h2 className={"fuhe"}>Current Alerts</h2>
+            <h2 className={"fuhe"} id={"curr"}>Current Alerts</h2>
             <ul className="alert-list">
               {
                 <ul>
@@ -351,7 +350,7 @@ export default function Home() {
         </div>
         <div className="flex justify-evenly mt-10 gap-10 px-10">
           <section className="alerts flex-1">
-            <h2 className={"fuhe"}>Predicted Alerts</h2>
+            <h2 className={"fuhe"} id={"pred"}>Predicted Alerts</h2>
             <select
               className="text-black bg-white"
               value={selectedPlace}
