@@ -34,9 +34,10 @@ export default function Home() {
 
   function mcoord(x) {
     const marker = new mapboxgl.Marker()
-      .setLngLat(x)
+      .setLngLat([x[1], x[0]])
       .addTo(mapRef.current);
-
+      
+/*
     if (!mapContainerRef.current) return;
 
     const size = 200;
@@ -114,6 +115,7 @@ export default function Home() {
         "icon-image": "pulsing-dot",
       },
     });
+    */
   }
 
   useEffect(() => {
@@ -341,10 +343,11 @@ export default function Home() {
               {
                 <ul>
                   {realTimeUpdates.map((item, index) => (
-                    <li key={index}>{item.title}</li>
+                    <li key={index} onClick={mcoord([item.geo_lat, item.geo_long])}>{item.title}</li>
                   ))}
                 </ul>
               }
+              
             </ul>
           </div>
         </div>
@@ -381,7 +384,6 @@ export default function Home() {
                 .map((alert) => (
                   <li
                     key={alert.id}
-                    onClick={() => mcoord([alert.lat, alert.lng])}
                   >
                     {alert.title}
                   </li>
