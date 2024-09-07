@@ -127,7 +127,7 @@ export default function Home() {
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
       center: [0, 0],
-      zoom: 5,
+      zoom: 3,
       style: "mapbox://styles/mapbox/streets-v12",
     });
     const size = 200;
