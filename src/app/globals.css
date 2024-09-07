@@ -268,3 +268,27 @@ body {
 .lno {
   text-decoration: none;
 }
+
+.chk {
+  background-color: #000;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 12px;
+}
+
+.chk:hover {
+  border: 1px solid white;
+  background-color: #fff;
+  color: black;
+  padding: 10px 15px;
+  border-radius: 12px;
+}
+
+.idk {
+  font-weight: 800;
+}
+
+.fuhe {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
